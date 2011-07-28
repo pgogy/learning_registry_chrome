@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <script type="text/javascript">	
+	
+		function init(){
+		
+			var bkg = chrome.extension.getBackgroundPage(); 
+			
+			n = document.getElementById('picture');
+
+			document.getElementById('picture').src = bkg.picture_src;
+			
+			document.getElementById('picture').onload = function(){
+			
+				if (n.offsetWidth != 0) {
+									
+					curWidth = n.offsetWidth;
+					
+				}
+					
+				if (n.offsetHeight != 0) {
+					
+					curHeight = n.offsetHeight;				
+					
+				}
+										
+				var new_node = document.createElement("CANVAS");				
+
+				new_node.style.height = curHeight + "px";
+				new_node.style.width = curWidth + "px";
+							
+				n.parentNode.appendChild(new_node);	
+							
+				var context = new_node.getContext('2d');
+				
+				new_node.setAttribute("height",curHeight);
+				new_node.setAttribute("width",curWidth);
+									
+				var elem = new_node;
+
+				if (elem && elem.getContext) {
+					  
+					var context = elem.getContext('2d');
+					  
+					if (context) {					
+												
+						context.drawImage(document.getElementById('picture'), 0, 0);
+							
+						//if(license_found){
+								
+							license_value  = bkg.license_value;
+							if(license_value==""){
+							
+								license_value  = "No License found";
+							
+							}
+									
+							context.fillRect(0, (curHeight-25), curWidth, (curHeight-25));
+							context.fillStyle = "White";
+									
+							context.fillText(window.location.href,0, (curHeight-18));
+							if(license_value!=""){
+							
+								context.fillText(license_value,0, (curHeight-5));
+								
+							}
+							
+						//}
+						
+					}
+					
+				}				
+																			
+				n.parentNode.removeChild(n);
+				
+				window.open(new_node.toDataURL("image/png"));								
+				
+			}
+			
+		}
+  	
+    </script>  
+  </head>
+  <body onload="init();" style="font-family:arial; width:600px;">
+    <img src="" id="picture" />
+  </body>
+</html> 

@@ -1,0 +1,132 @@
+<script type="text/javascript">
+
+	alert("fo shizz");
+	
+	chrome.browserAction.onClicked.addListener(function(tab_something) {
+		
+		chrome.tabs.getSelected(null, function(tab) {
+						
+			chrome.tabs.sendRequest(tab.id, {command: "parse"}, function(response) {
+			
+			
+			});
+			
+		});
+								
+	});
+	
+	chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	
+		if(request.command=="ajax"){
+
+			//var replace_node = link_node;
+	  
+			var xmlHttpRequest = new XMLHttpRequest();
+			
+			url = request.link;
+																	
+			xmlHttpRequest.open("GET","http://lrtest01.learningregistry.org/harvest/getrecord?by_resource_id=TRUE&request_id=" + escape(url), true);
+			xmlHttpRequest.onreadystatechange=function(){
+			  
+			if (xmlHttpRequest.readyState==4){
+													
+				var my_JSON_object = JSON.parse(xmlHttpRequest.responseText);
+					
+				if(my_JSON_object.getrecord.record!=""){
+								
+					var results_text = new Array();
+							
+					for(x = 0; x<my_JSON_object.getrecord.record.length; x++){
+																			
+						xml_data = my_JSON_object.getrecord.record[x].resource_data.resource_data;
+															
+						if (window.DOMParser){
+								
+							parser=new DOMParser();
+							xmlDoc=parser.parseFromString(xml_data,"text/xml");
+									
+						}
+								
+						n = xmlDoc;
+						rootNode = n;
+								
+						while (n) {
+																						
+							switch(n.nodeName){
+									
+								case "description" : if(n.firstChild.nextSibling.firstChild.nodeValue!=""){results_text.push("Description " + n.firstChild.nextSibling.firstChild.nodeValue + "\n");} break;
+								case "rights" : if(n.firstChild.nextSibling.firstChild.nodeValue!=""){results_text.push("Rights " + n.firstChild.nextSibling.firstChild.nodeValue + "\n");} break;
+								case "keyword" : if(n.firstChild.nextSibling.firstChild.nodeValue!=""){results_text.push("Keywords " + n.firstChild.nextSibling.firstChild.nodeValue + "\n");} break;
+								case "usageDataSummary" : for(y=0;y<n.childNodes.length;y++){
+
+															if(n.childNodes[y].nodeName=="integer"){
+																		
+																results_text.push(n.childNodes[y].attributes.getNamedItem('type').nodeValue + " " + n.childNodes[y].attributes.getNamedItem('dateTimeEnd').nodeValue + " " + n.childNodes[y].childNodes[0].nodeValue + "\n");
+																		
+															}
+
+					  								    }
+																  
+														break;									
+							}
+										
+							if (n.v) {
+							
+								n.v = false;
+								
+								if (n == rootNode) {
+									break;
+								}
+										
+								if (n.nextSibling) {
+										
+									n = n.nextSibling;
+											
+								}else{
+										
+									n = n.parentNode;
+											
+								}
+										
+							}else{
+									
+								if (n.firstChild) {
+										
+									n.v = true;
+									n = n.firstChild;
+											
+								}else if (n.nextSibling) {
+										
+									n = n.nextSibling;
+												
+								}else{
+										
+									n = n.parentNode;
+												
+								}
+																			
+							}
+									
+						}							
+							
+					}
+					
+					chrome.tabs.sendRequest(sender.tab.id, {command: "present", data:results_text, node: request.node_id}, function(response) {
+			
+			
+					});
+																						
+				}		
+						
+			}
+				
+		};				
+		
+		xmlHttpRequest.send();			
+		
+		}
+		
+	
+	});
+         
+</script>
