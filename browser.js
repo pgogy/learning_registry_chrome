@@ -15,7 +15,7 @@ function check_url(url, link_node) {
 		
 			urls_found[url]=true;
 							    		
-			xmlHttpRequest.open("GET","http://lrtest01.learningregistry.org/harvest/getrecord?by_resource_id=TRUE&request_id=" + escape(url), true);
+			xmlHttpRequest.open("GET","http://sandbox.learningregistry.org/harvest/getrecord?by_resource_id=TRUE&request_id=" + escape(url), true);
 			xmlHttpRequest.onreadystatechange=function(){
 	      
 				if (xmlHttpRequest.readyState==4){
