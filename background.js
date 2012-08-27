@@ -1,13 +1,9 @@
-<script type="text/javascript">
 
-	alert("fo shizz");
-	
 	chrome.browserAction.onClicked.addListener(function(tab_something) {
 		
 		chrome.tabs.getSelected(null, function(tab) {
 						
-			chrome.tabs.sendRequest(tab.id, {command: "parse"}, function(response) {
-			
+			chrome.tabs.sendMessage(tab.id, {command: "parse"}, function(response) {
 			
 			});
 			
@@ -15,18 +11,17 @@
 								
 	});
 	
-	chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	
 		if(request.command=="ajax"){
-
-			//var replace_node = link_node;
-	  
+		
 			var xmlHttpRequest = new XMLHttpRequest();
 			
 			url = request.link;
-																	
-			xmlHttpRequest.open("GET","http://lrtest01.learningregistry.org/harvest/getrecord?by_resource_id=TRUE&request_id=" + escape(url), true);
-			xmlHttpRequest.onreadystatechange=function(){
+																
+			xmlHttpRequest.open("GET","http://alpha.mimas.ac.uk/harvest/getrecord?by_resource_id=TRUE&request_id=" + escape(url), true);
+			
+			xmlHttpRequest.onreadystatechange=function(){  
 			  
 			if (xmlHttpRequest.readyState==4){
 													
@@ -35,7 +30,7 @@
 				if(my_JSON_object.getrecord.record!=""){
 								
 					var results_text = new Array();
-							
+					
 					for(x = 0; x<my_JSON_object.getrecord.record.length; x++){
 																			
 						xml_data = my_JSON_object.getrecord.record[x].resource_data.resource_data;
@@ -51,23 +46,19 @@
 						rootNode = n;
 								
 						while (n) {
-																						
-							switch(n.nodeName){
+						
+							node_name = n.nodeName.split("dc:").join("");
+							
+							switch(node_name){
 									
-								case "description" : if(n.firstChild.nextSibling.firstChild.nodeValue!=""){results_text.push("Description " + n.firstChild.nextSibling.firstChild.nodeValue + "\n");} break;
-								case "rights" : if(n.firstChild.nextSibling.firstChild.nodeValue!=""){results_text.push("Rights " + n.firstChild.nextSibling.firstChild.nodeValue + "\n");} break;
-								case "keyword" : if(n.firstChild.nextSibling.firstChild.nodeValue!=""){results_text.push("Keywords " + n.firstChild.nextSibling.firstChild.nodeValue + "\n");} break;
-								case "usageDataSummary" : for(y=0;y<n.childNodes.length;y++){
+								default : if(n.firstChild!=null){
 
-															if(n.childNodes[y].nodeName=="integer"){
-																		
-																results_text.push(n.childNodes[y].attributes.getNamedItem('type').nodeValue + " " + n.childNodes[y].attributes.getNamedItem('dateTimeEnd').nodeValue + " " + n.childNodes[y].childNodes[0].nodeValue + "\n");
-																		
-															}
+											results_text.push(node_name + " : " + n.firstChild.nodeValue);
 
-					  								    }
-																  
-														break;									
+										  }
+										  
+										  break;									
+									
 							}
 										
 							if (n.v) {
@@ -111,8 +102,7 @@
 							
 					}
 					
-					chrome.tabs.sendRequest(sender.tab.id, {command: "present", data:results_text, node: request.node_id}, function(response) {
-			
+					chrome.tabs.sendMessage(sender.tab.id, {command: "present", data:results_text, node: request.node_id}, function(response) {
 			
 					});
 																						
@@ -129,4 +119,3 @@
 	
 	});
          
-</script>

@@ -7,6 +7,8 @@ var urls_found = new Array();
 
 function check_url(url, link_node) {
 
+		console.log("CHECK URL");
+	
 		var replace_node = link_node;
 	  
 	    var xmlHttpRequest = new XMLHttpRequest();
@@ -23,12 +25,6 @@ function check_url(url, link_node) {
 					var my_JSON_object = JSON.parse(xmlHttpRequest.responseText);
 					
 					if(my_JSON_object.getrecord.record!=""){
-																					
-						//for(x in my_JSON_object.getrecord.record[0].resource_data){
-						
-						//	alert(x);
-						
-						//}
 														
 						var marker_div = document.createElement("DIV");	
 						marker_div.style.minHeight="10px";
@@ -66,8 +62,6 @@ var page_process = new function page_process() {
 				var n = content_passed.getElementById("search");
 			
 			}
-			//var n = content_passed.getElementById("results");
-			//var n = content_passed.getElementById("web");
 			
 			var rootNode = n;
 			

@@ -1,9 +1,5 @@
-OpenAttribute for Chrome
+Jlern resources tool
 =========================
 
-OpenAttribute for Chrome adds support for displaying license and
-attribution information for works as you browse. If the page or items
-on the page are licensed, a CC icon will appear in the URL bar, which
-can be clicked to display the author and license information. This
-metadata is used to generate HTML which can be used to attribute
-reuse.
+A Chrome browser plugin to allow for searching web links for Jlern information
+

@@ -1,23 +1,32 @@
 {
-   "background_page": "background.html",
-   "content_scripts": [
-   {
-   		"matches": ["http://*/*","https://*/*"],
-		"js": ["content_script.js"]
-   
-   }],
-   "default_locale": "en_US",
-   "icons": {
-      "128": "icon.png"
-   },
-   "name": "Learning Reg",
-   "browser_action": {
-      "default_icon": "icon.png",
-	  "default_title": "DO SOME CRAZY SHITE"
-   },
-   "permissions": [ "tabs",
-   					"<all_urls>",
-					"http://*/"
-				  ],
-   "version" : "0.6"
+    "background": { "scripts": ["background.js"] },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "js": [
+                "content_script.js"
+            ]
+        }
+    ],
+    "default_locale": "en_US",
+    "icons": {
+        "128": "icon.png"
+    },
+    "name": "JLern Resources Tool",
+    "browser_action": {
+        "default_icon": "button.png",
+        "default_title": "Check links for Learning Registry information"
+    },
+    "permissions": [
+        "tabs",
+        "<all_urls>",
+        "http://*/"
+    ],
+    "content_security_policy": "script-src 'self'; object-src 'self'",
+    "manifest_version": 2,
+    "version": "0.1"
 }
+

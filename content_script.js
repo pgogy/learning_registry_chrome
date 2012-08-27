@@ -1,4 +1,4 @@
-chrome.extension.onRequest.addListener(
+chrome.extension.onMessage.addListener(
 	 
 	function(request, sender, sendResponse) {	
 	
@@ -9,8 +9,8 @@ chrome.extension.onRequest.addListener(
 		}
 		
 		if(request.command=="present"){
-			
-			present_results(request);
+		
+			present_results(request);			
 			
 		}
 		
@@ -32,16 +32,15 @@ function present_results(data_set){
 	marker_div.style.color="#000";
 	marker_div.style.fontWeight="bold";
 	marker_div.style.display="inline";
-	marker_div.setAttribute("onclick",'document.getElementById("' + id_string + '").style.display="block";');
 	newtext=document.createTextNode('+');
-	marker_div.appendChild(newtext);												
+	marker_div.appendChild(newtext);			
+									
 	replace_node.parentNode.insertBefore(marker_div, replace_node);
 									
 	var content_div = document.createElement("DIV");	
-	content_div.style.clear="left";
 	content_div.style.float="left";
 	content_div.style.position="relative";
-	content_div.style.minWidth="100%";
+	content_div.style.width="100%";
 	content_div.style.backgroundColor="#fff";
 	content_div.style.color="#000";
 	content_div.style.border="1px solid #000";
@@ -49,24 +48,35 @@ function present_results(data_set){
 	content_div.id = id_string;
 	
 	while(string = data_set.data.pop()){
+	
 		results_para = document.createElement("P");
 		results_para.style.display="block";
 		newtext=document.createTextNode(string);
 		results_para.appendChild(newtext);
 		content_div.appendChild(results_para);
+		
 	}
 	
-	replace_node.parentNode.parentNode.parentNode.parentNode.appendChild(content_div);											
+	replace_node.parentNode.insertBefore(content_div,replace_node);											
 
+	marker_div.addEventListener("click",function(){
+			if(content_div.style.display=="block"){
+				content_div.style.display="none";	
+			}else{
+				content_div.style.display="block";
+			}
+		}
+	);
+	
 }
 
 function check_url(url, link_node) {
 
 	if(urls_found[url]==undefined){
 		
-		urls_found[url]=true;
+		urls_found[url]=true;			
 						
-		chrome.extension.sendRequest({command:"ajax",link:url,node_id:link_node},function(){});
+		chrome.extension.sendMessage({command:"ajax",link:url,node_id:link_node},function(){});
 		
 	}
 
@@ -79,16 +89,12 @@ function parse_document(){
 	if(document.location.toString().indexOf("www.google")!=-1){				
 				
 		var n = document.getElementById("search");
-			
-	}
-			
-	if(document.location.toString().indexOf("search.yahoo.com")!=-1){	
+		
+	}else if(document.location.toString().indexOf("search.yahoo.com")!=-1){	
 			
 		var n = document.getElementById("results");
 			
-	}
-			
-	if(document.location.toString().indexOf("bing.com")!=-1){	
+	}else if(document.location.toString().indexOf("bing.com")!=-1){	
 				
 		var n = document.getElementById("web");
 			
@@ -102,18 +108,22 @@ function parse_document(){
 				
 			if(n.hasAttribute("href")){
 			
-				if(n.href.toString().indexOf("google")==-1){
-				
-					id_string = "node_" + Math.floor(Math.random()*5000);
+				if(n.href!=undefined){
+			
+					if(n.href.indexOf("google")==-1){
 					
-					if(n.id==""){
-					
-						n.id = id_string;
+						id_string = "node_" + Math.floor(Math.random()*5000);
 						
+						if(n.id==""){
+						
+							n.id = id_string;
+							
+						}
+						
+						check_url(n.href, id_string);
+							
 					}
-					
-					check_url(n.href, id_string);
-						
+				
 				}
 					
 			}
